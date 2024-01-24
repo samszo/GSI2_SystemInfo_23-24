@@ -8,6 +8,14 @@
 </head>
 <body>
     <h1>Exemples de code pour les M2 GSI promotion 23-24</h1>
-    <!-- Votre contenu HTML ici -->
+    <h2>Groupes projets</h2>
+    <div id="listeProjet"></div>
+    <script>
+        d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSI12b8bU2rzFanGSvLxn6yzYgdF6LAEUOdtlakSDEXhTrd7OkvTSry-0FSn2404dku3MK6Kjb0Wo5U/pub?gid=671736105&single=true&output=csv")
+            .then(rs=>{
+                console.log(rs);
+                d3.select('#listeProjet').selectAll('h3').data(rs).enter().append('h3').text(d=>d['Nom du groupe']);
+            })
+    </script>
 </body>
 </html>
