@@ -24,21 +24,68 @@
                 console.log(rs);
                 let lp = d3.select('#listeProjet');
                 //récupèrer les groupe et les participants
-                let gp=[], divGroupe;
+                let gp=[], divGroupe, divParticipants;
                 rs.forEach(r => {
                     let groupe = {'nom':r['Nom du groupe'], 'url':r['Adresse du repository GitHub'],'participants':[]};
                     for (let index = 1; index <= 4; index++) {
                         if(r['Nom du participant '+index]){
-                            let p = {'nom':r['Nom du participant '+index],url:"https://github.com/"+r['Compte GitHub du participant '+index]};                        
+                            let p = {'nom':r['Nom du participant '+index],
+                                    url:"https://github.com/"+r['Compte GitHub du participant '+index],
+                                    urlGithubGroupe : r['Adresse du repository GitHub'],
+                                    id:r['ownerId '+index]
+                                };                        
                             groupe.participants.push(p);
                         }
                     }
                     gp.push(groupe);
                 });
+                //création des groupes
                 divGroupe = lp.selectAll('div').data(gp).enter().append('div');
                 divGroupe.append('a').attr('href',d=>d.url).attr('target','_blanck').append('h3').text(d=>d.nom);
-                divGroupe.selectAll('div').data(d=>d.participants).enter().append('div').append('a').attr('href',d=>d.url).attr('target','_blanck').append('h4').text(d=>d.nom);
+                //création des participants du groupe
+                divParticipants = divGroupe.selectAll('div').data(d=>d.participants).enter().append('div')
+                    .attr('id',d=>'etu'+d.id);
+                //lien vers le github du participant
+                divParticipants.append('a')
+                    .attr('href',d=>d.url).attr('target','_blanck').append('h4').text(d=>d.nom);
+                //lien vers le fichier json omk des arguments du participants
+                divParticipants.append('a')
+                    .attr('href',d=>d.urlGithubGroupe+'/blob/main/data/items'+d.id+'.json').attr('target','_blanck').append('h5').text('json des arguments');
+                //création d'un bouton pour afficher les arguments
+                divParticipants.append('button')
+                    .text('Voir les arguments')
+                    .on('click',showArguments);
             })
+        function showArguments(e,d){
+            console.log(e,d);
+            //supprimer les anciennes informations
+            d3.select('#etu'+d.id).select('ul').remove();
+            //récupérer d'omk la lsite des argument d'un participant
+            d3.json("https://argument.generateur.art/api/items?owner_id="+d.id)
+            .then(rs=>{
+                console.log(rs);
+                //ajouter la liste des argument du participant
+                let ulEtuArgu = d3.select('#etu'+d.id).append('ul'),
+                //ajoute chaque argument
+                arguments = ulEtuArgu.selectAll('li').data(rs).enter().append('li')
+                    .attr('id',d=>'argu'+d['o:id'])
+                //Ajoute le lien vers l'argument dans omk
+                arguments.append('a')
+                    .attr('href',d=>'https://argument.generateur.art/admin/item/'+d['o:id'])
+                    .attr('target','_blanck')
+                    .text(d=>d["dcterms:title"][0]["@value"]);
+                arguments.append('button')
+                    .text('Générer des arguments')
+                    .on('click',genereArgument);
+
+            })
+        }
+        function genereArgument(e,d){
+            let argu = d3.select('argu'+d['o:id']);
+            argu.select('div').remove();
+            argu.append('div').text('Test : '+d3.randomUniform(1000000000000));
+
+        }
     </script>
 </body>
 </html>

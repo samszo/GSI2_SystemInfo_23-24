@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemple de code pour les M2 GSI promotion 23-24</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        h3 {
+            color:red;
+        }
+        h4 {
+            margin-left:30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Arguments M2 GSI promotion 23-24</h1>
+    <h2>Groupes projets : </h2>
+    <div id="listeArgument"></div>
+    <script>
+        d3.json("https://argument.generateur.art/api/items/107")
+            .then(rs=>{
+                console.log(rs);
+            })
+    </script>
+</body>
+</html>
